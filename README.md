@@ -11,8 +11,8 @@ It is not possible to rejoin private groups and channels unless you were once an
  2. Create and copy your application access key and hash from [here](https://my.telegram.org/apps)
  3. Modify the `API_ID` and `API_HASH` variables in `tg_chat_rejoin/__main__.py`
  4. Install the [Telethon](https://github.com/LonamiWebs/Telethon) library, ideally via a virtual environment:
-	 5. `python3 -m venv ./venv && source ./venv/bin/activate`
-	 6. `pip3 install -r requirements.txt`
+ 	- `python3 -m venv ./venv && source ./venv/bin/activate`
+	- `pip3 install -r requirements.txt`
  5. Run the script `python3 tg_chat_rejoin`
  6. Follow the prompts
 
