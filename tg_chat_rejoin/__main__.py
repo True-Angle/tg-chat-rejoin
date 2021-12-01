@@ -4,6 +4,7 @@ import logging
 import subprocess
 import sys
 import textwrap
+import webbrowser
 
 from telethon.errors import TakeoutInitDelayError, ChannelPrivateError
 from telethon.sync import TelegramClient
@@ -46,10 +47,18 @@ def dump_chat(left_chat, full_info, client: TelegramClient):
             print(' > This chat has no profile picture.')
 
 
+def open_chat(left_chat):
+    if left_chat.username is None:
+        print(' > This chat has no username - unable to open it.')
+    else:
+        print(' > Attempting to open chat.')
+        webbrowser.open(f'tg://resolve?domain={left_chat.username}')
+
+
 def process_left_chat(left_chat, client: TelegramClient):
     full_info = chat_full_info_or_none(left_chat, client)
     additional = ' (may not be possible for this chat)' if full_info is None else ''
-    resp = input(f'Attempt to rejoin "{left_chat.title}"{additional}? [y/N/d/exit]: ').lower()
+    resp = input(f'Attempt to rejoin "{left_chat.title}"{additional}? [y/N/o/d/exit]: ').lower()
 
     if resp == 'y':
         try:
@@ -59,6 +68,9 @@ def process_left_chat(left_chat, client: TelegramClient):
             print(f' > Unable to rejoin "{left_chat.title}": "{e.__class__.__name__}: {str(e)}".')
     elif resp == 'd':
         dump_chat(left_chat, full_info, client)
+        process_left_chat(left_chat, client)
+    elif resp == 'o':
+        open_chat(left_chat)
         process_left_chat(left_chat, client)
     elif resp == 'exit':
         raise StopIteration
@@ -76,6 +88,7 @@ def main():
                   ' •    y: attempt to re-join this chat\n'
                   ' •    N: skip this chat (default)\n'
                   ' •    d: dump all known information about this chat\n'
+                  ' •    o: open the chat in Telegram without joining (chat must be public with a username)\n'
                   ' • exit: skip all remaining chats and quit the script\n\n')
             for left_chat in result.chats:
                 try:
